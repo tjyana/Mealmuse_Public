@@ -9,3 +9,4 @@ seaborn
 scikit-learn
 openai
 huggingface-hub
+transformers
