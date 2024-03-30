@@ -1,5 +1,5 @@
 import streamlit as st
-from thecodethatweneed_0306 import get_ingredients_combinations, prompt_muse, get_recipe_info, final_recipes, find_top_3_groups, count_verified_pairings, imagegen
+from functions import get_ingredients_combinations, prompt_muse, get_recipe_info, final_recipes, find_top_3_groups, count_verified_pairings, imagegen
 import pandas as pd
 import pickle
 # import itertools
