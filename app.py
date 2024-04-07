@@ -1,5 +1,5 @@
 import streamlit as st
-from functions import get_ingredients_combinations, prompt_muse, get_recipe_info, final_recipes, find_top_3_groups, count_verified_pairings, imagegen
+from utils.functions import get_ingredients_combinations, prompt_muse, get_recipe_info, final_recipes, find_top_3_groups, count_verified_pairings, imagegen, combinations_of_two, data_query, get_dataframe, final_recipes, muse_comb, recipe_generator, convert_to_dictionary, image_generator
 import pandas as pd
 import pickle
 # import itertools
@@ -13,6 +13,7 @@ import pickle
 
 #--------------------
 
+# Set page session states
 if 'page1' not in st.session_state:
     st.session_state['page1'] = True
 if 'page2' not in st.session_state:
@@ -20,7 +21,7 @@ if 'page2' not in st.session_state:
 if 'page3' not in st.session_state:
     st.session_state['page3'] = False
 
-# st.session_state['verified_pairings'] = 0
+
 if 'verified_pairings' not in st.session_state:
     filtered_df = pd.read_parquet('df.parquet.gzip')
     ingredient1 = filtered_df['ingredient1'].str.strip("'")
@@ -29,16 +30,22 @@ if 'verified_pairings' not in st.session_state:
     st.session_state['verified_pairings'] = verified_pairings
 
 
+# ##############################################################
+# 1 Title Page
+# ##############################################################
+
 if st.session_state['page1']:
 
+    # Set columns for page 1
     col1, col2, col3 = st.columns([1, 4, 1])
-    # Mealmuse header
 
+    # Mealmuse header
     col2.markdown("<h1 style='text-align: center; color: black; font-size:60px'>Mealmuse</h1>", unsafe_allow_html=True)
 
     # Mealmuse subheader (Turn What..)
     col2.markdown("<h2 style='text-align: center; color: grey; font-size:20px'>Turn What You have to What You Crave &#128512; </h2>", unsafe_allow_html=True)
 
+    # Set center image
     col2.image('mealmuse_images/people4.png')
     start_button = col2.button('START')
 
@@ -47,16 +54,7 @@ if st.session_state['page1']:
     st.image('mealmuse_images/circleobjectright.png')
     st.image('mealmuse_images/centerobjects.png')
 
-
-
-    # filtered_df = pd.read_parquet('df.parquet.gzip')
-
-    # ingredient1 = filtered_df['ingredient1'].str.strip("'")
-    # ingredient2 = filtered_df['ingredient2'].str.strip("'")
-    # verified_pairings = set(zip(ingredient1, ingredient2))
-
-
-    # start button styles#
+    # Start button styles
     st.markdown("""
     <style>
     div.stButton {
@@ -128,22 +126,29 @@ if st.session_state['page1']:
         }
     </style>""", unsafe_allow_html=True)
 
+    # Go to page 2
     if start_button:
         st.session_state['page2'] = True
         st.session_state['page1'] = False
         st.experimental_rerun()
 
 
-# st.session_state['verified_pairings'] = verified_pairings
+
+# ##############################################################
+# 2 Input Page
+# Takes user input and sends it as-is to Output Page.
+# ##############################################################
 
 if st.session_state['page2']:
-    col1, col2, col3 = st.columns([1, 4, 1])
-    # Mealmuse header
 
+    # Set columns for page 2
+    col1, col2, col3 = st.columns([1, 4, 1])
+
+    # Mealmuse header
     col2.markdown("<h1 style='text-align: center; color: black; font-size:60px'>Mealmuse</h1>", unsafe_allow_html=True)
     # Mealmuse subheader (Turn What..)
     col2.markdown("<h2 style='text-align: center; color: grey; font-size:20px'>Turn What You have to What You Crave &#128512; </h2>", unsafe_allow_html=True)
-    #col2.markdown("<h3 style='text-align: center; color: black; font-size:10px'>Enter Your Ingredients</h3>", unsafe_allow_html=True)
+
 
     st.session_state['ingredients'] = col2.text_input('', help='Enter the list of ingredients:')
 
@@ -151,11 +156,12 @@ if st.session_state['page2']:
 
     col2.markdown("<h3 style='text-align: center; color: grey; font-size:20px'>An AI-powered recipe generator that utilizes Machine Learning to offer customized cooking suggestions based on avalable ingredients</h3>", unsafe_allow_html=True)
 
+    # Images left, right and title background
     st.image('mealmuse_images/circleobjectleft.png')
     st.image('mealmuse_images/circleobjectright.png')
     st.image('mealmuse_images/centerobjects.png')
 
-    # evaluate button #
+    # evaluate button
     st.markdown("""
     <style>
     div.stButton {
@@ -199,7 +205,6 @@ if st.session_state['page2']:
 
 
      # left background image styles
-
     st.markdown("""
     <style>
         #root > div:nth-child(1) > div.withScreencast > div > div > div > section > div.block-container.st-emotion-cache-1y4p8pa.ea3mdgi5 > div > div > div > div:nth-child(2) > div > div{
@@ -211,7 +216,6 @@ if st.session_state['page2']:
     </style>""", unsafe_allow_html=True)
 
      # right background image styles
-
     st.markdown("""
     <style>
         #root > div:nth-child(1) > div.withScreencast > div > div > div > section > div.block-container.st-emotion-cache-1y4p8pa.ea3mdgi5 > div > div > div > div:nth-child(3) > div > div{
@@ -222,7 +226,6 @@ if st.session_state['page2']:
     </style>""", unsafe_allow_html=True)
 
      # center background image styles
-
     st.markdown("""
     <style>
         #root > div:nth-child(1) > div.withScreencast > div > div > div > section > div.block-container.st-emotion-cache-1y4p8pa.ea3mdgi5 > div > div > div > div:nth-child(4) > div > div{
@@ -234,8 +237,7 @@ if st.session_state['page2']:
 
 
 
-    #main paragraph at the middle
-
+    # main paragraph at the middle
     st.markdown("""
     <style>
     #root > div:nth-child(1) > div.withScreencast > div > div > div > section > div.block-container.st-emotion-cache-1y4p8pa.ea3mdgi5 > div > div > div > div.st-emotion-cache-ocqkz7.e1f1d6gn5 > div.st-emotion-cache-115gedg.e1f1d6gn3 > div > div > div > div:nth-child(5) > div{
@@ -243,7 +245,7 @@ if st.session_state['page2']:
     }
     </style>""", unsafe_allow_html=True)
 
-    #footer
+    # footer
     st.markdown("""
         <style>
         .footer {
@@ -261,11 +263,21 @@ if st.session_state['page2']:
         </div>
         </style>""", unsafe_allow_html=True)
 
+    # Go to page 3
     if evaluate_button:
         st.session_state['page3'] = True
         st.session_state['page2'] = False
         st.experimental_rerun()
 
+
+
+
+# ##############################################################
+# 3 Output Page
+# Takes user input as a string from Input Page.
+# Outputs ingredients, instructions, and image.
+# Compatibility functions and the model are here.
+# ##############################################################
 
 
 if st.session_state['page3']:
@@ -280,39 +292,38 @@ if st.session_state['page3']:
 
     # set user input as ingredients
     ingredients = st.session_state['ingredients']
-     # candidates = 3 ingredient combinations and their scores
-    verified_pairings = st.session_state['verified_pairings']
-    candidates = find_top_3_groups(ingredients, verified_pairings)
-    print(candidates)
-    # re-assign ingredient pairings to new variable:
-    st.session_state['scored_ingredients'] = candidates
+    # find_top_3_groups = combinations_of_two > data_query > muse_comb
 
-    # old version
-    # contents, titles, ingredients, scores = [], [], [], []  ##<==== changed the variables a bit so the variables below will not be affected
-    # # st.session_state['scored_ingredients'] = ingredient combinations and scores
-    # for ing in st.session_state['scored_ingredients']:
-    #     # recipe = full chatgpt output, unmodified
-    #     recipe = prompt_muse(ing)
-    #     # title, ing, content = info parsed from chatgpt output
-    #     title, ing, content = get_recipe_info(recipe)
-    #     # contents = recipe instructions
-    #     contents.append(content) # content = from get_recipe_info func
-    #     # ingredients = recipe ingredients
-    #     ingredients.append(ing) # ing = from get_recipe_info func
-    #     # titles = recipe titles
-    #     titles.append(title) #
-    #     scores.append(model.predict_proba(contents))
-    #     # evaluate the recipe generated by chatgpt and output the final recipes
-    #     final_recipe = final_recipes(recipe, scores) ##<===added the regenerator and reassigned the titles, ingredients, and contents variables to reflect the final recipes
-    #     titles = final_recipe["Title"]
-    # st.write(final_recipe)
-    #     ingredients = final_recipe["Ingredients"]
-    #     contents = final_recipe["Instructions"]
+    # combinations_of_two(ingredients_input) > ingredients_combinations
+    # data_query(df, ingredients_combinations) > df_comb
+    # muse_comb(data_query, df) > ingredients_list
+
+    ingredients_combinations = combinations_of_two(ingredients)
+    df_comb = data_query(df, ingredients_combinations)
+    ingredients_list = muse_comb(df_comb)
+    st.session_state['scored_ingredients'] = ingredients_list
+
+
+    #  # candidates = 3 ingredient combinations and their scores
+    # verified_pairings = st.session_state['verified_pairings']
+    # candidates = find_top_3_groups(ingredients, verified_pairings)
+    # print(candidates)
+    # # re-assign ingredient pairings to new variable:
+    # st.session_state['scored_ingredients'] = candidates
+
+
+
+
+
 
     contents, titles, ingredients = [], [], []
     contents1, titles1, ingredients1, scores = [], [], [], []  ##<==== changed the variables a bit so the variables below will not be affected
     # st.session_state['scored_ingredients'] = ingredient combinations and scores
 
+
+    # recipe = recipe_generator(st.session_state['scored_ingredients']) > recipe (list)
+    # recipe_dicts = convert_to_dictionary(recipe)
+    # image_path = image_generator(recipe)
 
     st.write(st.session_state['scored_ingredients'])
     for ing in st.session_state['scored_ingredients']:
@@ -330,7 +341,6 @@ if st.session_state['page3']:
         titles1.append(title) #
         scores.append(model.predict_proba([content])[0][1])
         # evaluate the recipe generated by chatgpt and output the final recipes
-        print(scores)
     recipe_dict = {'Title': titles1, 'Ingredients': ingredients1, 'Instructions': contents1}
     final_recipe = final_recipes(recipe_dict, scores, model) ##<===added the regenerator and reassigned the titles, ingredients, and contents variables to reflect the final recipes
     titles.append(final_recipe["Title"])
@@ -346,23 +356,18 @@ if st.session_state['page3']:
 
     # Model predicts probabilities:
     st.session_state['scores'] = scores
-    # st.session_state['scores'] = model.predict_proba(contents)
-    # carrying over variables from previous page and re-assigning
-    # not necessary but keeping for simplicity
-    # titles = RECIPE TITLE. variable not being used below...?
-    #------titles = st.session_state['titles']
-    # scores = RECIPE EVALUATION SCORE. variable not being used below...?
-    #---------scores = st.session_state['scores']
 
 
+    # Columns
     col1, col2, col3 = st.columns([1, 4, 1])
-    # Mealmuse header
 
+    # Mealmuse header
     col2.markdown("<h1 style='text-align: center; color: black; font-size:60px'>Mealmuse</h1>", unsafe_allow_html=True)
     # Mealmuse subheader (Turn What..)
     col2.markdown("<h2 style='text-align: center; color: grey; font-size:20px'>Turn What You have to What You Crave &#128512; </h2>", unsafe_allow_html=True)
     #col2.markdown("<h3 style='text-align: center; color: black; font-size:10px'>Enter Your Ingredients</h3>", unsafe_allow_html=True)
 
+    # Background images
     st.image('mealmuse_images/circleobjectleft.png')
     st.image('mealmuse_images/circleobjectright.png')
     st.image('mealmuse_images/centerobjects.png')
