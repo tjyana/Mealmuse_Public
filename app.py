@@ -1,5 +1,5 @@
 import streamlit as st
-# from utils.functions import get_ingredients_combinations, prompt_muse, get_recipe_info, final_recipes, find_top_3_groups, count_verified_pairings, imagegen, combinations_of_two, data_query, get_dataframe, final_recipes, muse_comb, recipe_generator, convert_to_dictionary, image_generator
+from utils.functions import get_ingredients_combinations, prompt_muse, get_recipe_info, final_recipes, find_top_3_groups, count_verified_pairings, imagegen, combinations_of_two, data_query, get_dataframe, final_recipes, muse_comb, recipe_generator, convert_to_dictionary, image_generator
 import pandas as pd
 import pickle
 
@@ -130,7 +130,7 @@ if st.session_state['page1']:
     if start_button:
         st.session_state['page2'] = True
         st.session_state['page1'] = False
-        st.experimental_rerun()
+        st.rerun()
 
 
 
@@ -267,7 +267,7 @@ if st.session_state['page2']:
     if evaluate_button:
         st.session_state['page3'] = True
         st.session_state['page2'] = False
-        st.experimental_rerun()
+        st.rerun()
 
 
 
@@ -284,7 +284,7 @@ if st.session_state['page3']:
 
     @st.cache_data
     def get_model():
-        with open("model.pickle", "rb") as f:
+        with open("utils/model.pickle", "rb") as f:
             model = pickle.load(f)
         return model
 
