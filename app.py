@@ -23,7 +23,7 @@ if 'page3' not in st.session_state:
 
 
 if 'verified_pairings' not in st.session_state:
-    filtered_df = pd.read_parquet('data/Halved-DF.parquet.gzip')
+    filtered_df = pd.read_parquet('/data/Halved-DF.parquet.gzip')
     ingredient1 = filtered_df['ingredient1'].str.strip("'")
     ingredient2 = filtered_df['ingredient2'].str.strip("'")
     verified_pairings = set(zip(ingredient1, ingredient2))
