@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.functions import get_ingredients_combinations, prompt_muse, get_recipe_info, final_recipes, find_top_3_groups, count_verified_pairings, imagegen, combinations_of_two, data_query, get_dataframe, final_recipes, muse_comb, recipe_generator, convert_to_dictionary, image_generator
+# from utils.functions import get_ingredients_combinations, prompt_muse, get_recipe_info, final_recipes, find_top_3_groups, count_verified_pairings, imagegen, combinations_of_two, data_query, get_dataframe, final_recipes, muse_comb, recipe_generator, convert_to_dictionary, image_generator
 import pandas as pd
 import pickle
 
