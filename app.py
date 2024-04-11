@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.functions import prompt_muse, get_recipe_info, final_recipes, find_top_3_groups, count_verified_pairings, imagegen, combinations_of_two, data_query, get_dataframe, final_recipes, muse_comb, recipe_generator, convert_to_dictionary, image_generator
+from utils.functions import prompt_muse, get_recipe_info, final_recipes, find_top_3_groups, imagegen, combinations_of_two, data_query, final_recipes, muse_comb, recipe_generator, convert_to_dictionary, image_generator
 import pandas as pd
 import pickle
 from gradio_client import Client
@@ -291,6 +291,7 @@ if st.session_state['page3']:
     ingredients = st.session_state['ingredients']
     # find_top_3_groups = combinations_of_two > data_query > muse_comb
 
+    # PSEUDO CODE
     # combinations_of_two(ingredients_input) > ingredients_combinations
     # data_query(df, ingredients_combinations) > df_comb
     # muse_comb(data_query, df) > ingredients_list
@@ -318,11 +319,16 @@ if st.session_state['page3']:
     contents1, titles1, ingredients1, scores = [], [], [], []  ##<==== changed the variables a bit so the variables below will not be affected
     # st.session_state['scored_ingredients'] = ingredient combinations and scores
 
-
+    # PSEUDO CODE
     # recipe = recipe_generator(st.session_state['scored_ingredients']) > recipe (list)
     # recipe_dicts = convert_to_dictionary(recipe)
     # final_recipe = final_recipes(recipe_dict, scores, model)
     # image_path = image_generator(recipe)
+
+    recipe = recipe_generator(st.session_state['scored_ingredients'])
+    recipe_dicts = convert_to_dictionary(recipe)
+    final_recipe = final_recipes(recipe_dict, scores, model)
+    image_path = image_generator(recipe)
 
     st.write(st.session_state['scored_ingredients'])
     for ing in st.session_state['scored_ingredients']:
