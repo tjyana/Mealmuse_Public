@@ -2,14 +2,10 @@ import streamlit as st
 from utils.functions import get_ingredients_combinations, prompt_muse, get_recipe_info, final_recipes, find_top_3_groups, count_verified_pairings, imagegen, combinations_of_two, data_query, get_dataframe, final_recipes, muse_comb, recipe_generator, convert_to_dictionary, image_generator
 import pandas as pd
 import pickle
+from gradio_client import Client
 
 
-# cache for the model
 
-#Load the .csv file from Google Drive
-#Make sure the file is set to "Anyone with a link" or "Anyone on the Internet"
-#uncomment the code below after inserting the actual url to the file that we want to use:
-###filtered_df = pd.read_csv(url)
 
 #--------------------
 
