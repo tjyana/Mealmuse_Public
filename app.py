@@ -303,12 +303,12 @@ if st.session_state['page3']:
     st.session_state['scored_ingredients'] = ingredients_list
 
 
-    verified_pairings = st.session_state['verified_pairings']
-    candidates = find_top_3_groups(ingredients, verified_pairings)
-    print(candidates)
-    # re-assign ingredient pairings to new variable:
-    st.session_state['scored_ingredients'] = candidates
-    # candidates = 3 ingredient combinations and their scores
+    # verified_pairings = st.session_state['verified_pairings']
+    # candidates = find_top_3_groups(ingredients, verified_pairings)
+    # print(candidates)
+    # # re-assign ingredient pairings to new variable:
+    # st.session_state['scored_ingredients'] = candidates
+    # # candidates = 3 ingredient combinations and their scores
 
 
     contents, titles, ingredients = [], [], []
@@ -323,7 +323,7 @@ if st.session_state['page3']:
 
     recipe = recipe_generator(st.session_state['scored_ingredients'])
     recipe_dicts = convert_to_dictionary(recipe)
-    final_recipe = final_recipes(recipe_dict, scores, model)
+    final_recipe = final_recipes(recipe_dicts, scores, model)
     image_path = image_generator(recipe)
 
     st.write(st.session_state['scored_ingredients'])
