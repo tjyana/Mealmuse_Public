@@ -2,7 +2,7 @@ import streamlit as st
 from utils.functions import prompt_muse, get_recipe_info, final_recipes, find_top_3_groups, imagegen, combinations_of_two, data_query, final_recipes, muse_comb, recipe_generator, convert_to_dictionary, image_generator
 import pandas as pd
 import pickle
-from gradio_client import Client
+
 
 
 
@@ -287,6 +287,7 @@ if st.session_state['page3']:
 
     model = get_model()
 
+    df = pd.read_parquet('data/Halved-DF.parquet.gzip')
     # set user input as ingredients
     ingredients = st.session_state['ingredients']
     # find_top_3_groups = combinations_of_two > data_query > muse_comb
@@ -302,17 +303,12 @@ if st.session_state['page3']:
     st.session_state['scored_ingredients'] = ingredients_list
 
 
-
-
     verified_pairings = st.session_state['verified_pairings']
     candidates = find_top_3_groups(ingredients, verified_pairings)
     print(candidates)
     # re-assign ingredient pairings to new variable:
     st.session_state['scored_ingredients'] = candidates
     # candidates = 3 ingredient combinations and their scores
-
-
-
 
 
     contents, titles, ingredients = [], [], []
