@@ -11,3 +11,4 @@ openai
 huggingface-hub
 transformers
 gradio-client
+flax
