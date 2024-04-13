@@ -6,6 +6,7 @@ import openai
 import pandas as pd
 import itertools
 import streamlit as st
+import pickle
 
 # Anna's imports
 from transformers import FlaxAutoModelForSeq2SeqLM
@@ -19,7 +20,12 @@ open_key = st.secrets['key_a']
 
 ###helll00000"""
 
+def get_model():
+    with open("utils/model.pickle", "rb") as f:
+        model = pickle.load(f)
+    return model
 
+model = get_model()
 '''
 former get_ingredients_combinations, new compatibility function.
 Input:
@@ -144,20 +150,20 @@ def data_matching(df, ingredients_combinations):
 
 '''-----------------------------------------------------------------------------------------------------------'''
 
-def muse_comb(df):
-    '''
-     the function calculates the products and cube roots of 'Score' values in a DataFrame, then returns the top 3 'Combination'
-     values where the cube root is greater than 0
-    '''
-    product = []
-    for i in range(len(df)):
-        product.append(np.prod(df['Score'][i]))
+# def muse_comb(df):
+#     '''
+#      the function calculates the products and cube roots of 'Score' values in a DataFrame, then returns the top 3 'Combination'
+#      values where the cube root is greater than 0
+#     '''
+#     product = []
+#     for i in range(len(df)):
+#         product.append(np.prod(df['Score'][i]))
 
-    df['Product'] = product
-    df['cbrt'] = np.cbrt(product)
+#     df['Product'] = product
+#     df['cbrt'] = np.cbrt(product)
 
-    max_values = df.loc[df[df['cbrt'] > 0]['cbrt'].nlargest(3).index, 'Combination']
-    return max_values
+#     max_values = df.loc[df[df['cbrt'] > 0]['cbrt'].nlargest(3).index, 'Combination']
+#     return max_values
 
 '''-----------------------------------------------------------------------------------------------------------'''
 
@@ -246,49 +252,49 @@ def gptrecipe(max_values):
 
 
 '''-----------------------------------------------------------------------------------------------------------'''
-def final_recipes(recipes, scores, model):  ###<=== Function for evaluatimg if the score passes the threshold and regenerating if it doesn't
-    """
-    This evaluates whether the score of a recipe passes or fails the threshold.
-    If the recipe doesn't meet the threshold after 3 attempts, the last generated recipe is added.
-    """
-    final_recipes = {"Title": [], "Ingredients": [], "Instructions": []}
-    threshold = 0.4
+# def final_recipes(recipes, scores, model):  ###<=== Function for evaluatimg if the score passes the threshold and regenerating if it doesn't
+#     """
+#     This evaluates whether the score of a recipe passes or fails the threshold.
+#     If the recipe doesn't meet the threshold after 3 attempts, the last generated recipe is added.
+#     """
+#     final_recipes = {"Title": [], "Ingredients": [], "Instructions": []}
+#     threshold = 0.4
 
-    for i in range(len(recipes["Title"])):
-        if scores[i] >= threshold:
-            final_recipes["Title"].append(recipes["Title"][i])
-            final_recipes["Ingredients"].append(recipes["Ingredients"][i])
-            final_recipes["Instructions"].append(recipes["Instructions"][i])
-        else:
-            n = 0
-            tmp_recipe = {
-                "Title":recipes["Title"][i],
-                "Ingredients":recipes["Ingredients"][i],
-                "Instructions":recipes["Instructions"][i]
-                         }
-            last_recipe = {
-                "Title":recipes["Title"][i],
-                "Ingredients":recipes["Ingredients"][i],
-                "Instructions":recipes["Instructions"][i]
-                         }
-            while n < 3:
-                new_recipe = gptrecipe(tmp_recipe["Ingredients"][0])
-                new_score = model.predict_proba(new_recipe["Instructions"][0]) ###<=== insert the actual scoring model function here
-                if new_score >= threshold:
-                    final_recipes["Title"].append(new_recipe["Title"])
-                    final_recipes["Ingredients"].append(new_recipe["Ingredients"])
-                    final_recipes["Instructions"].append(new_recipe["Instructions"])
-                    break  # Exit loop if the new recipe passes the threshold
-                else:
-                    last_recipe = new_recipe  # Update tmp_recipe with the new recipe if the threshold isn't met
-                    n += 1
-            else: # Add the last generated recipe if the loop completes without finding a passing recipe
-                final_recipes["Title"].append(last_recipe["Title"])
-                final_recipes["Ingredients"].append(last_recipe["Ingredients"])
-                final_recipes["Instructions"].append(last_recipe["Instructions"])
-                break  # Exit the outer loop to prevent an unending loop
+#     for i in range(len(recipes["Title"])):
+#         if scores[i] >= threshold:
+#             final_recipes["Title"].append(recipes["Title"][i])
+#             final_recipes["Ingredients"].append(recipes["Ingredients"][i])
+#             final_recipes["Instructions"].append(recipes["Instructions"][i])
+#         else:
+#             n = 0
+#             tmp_recipe = {
+#                 "Title":recipes["Title"][i],
+#                 "Ingredients":recipes["Ingredients"][i],
+#                 "Instructions":recipes["Instructions"][i]
+#                          }
+#             last_recipe = {
+#                 "Title":recipes["Title"][i],
+#                 "Ingredients":recipes["Ingredients"][i],
+#                 "Instructions":recipes["Instructions"][i]
+#                          }
+#             while n < 3:
+#                 new_recipe = gptrecipe(tmp_recipe["Ingredients"][0])
+#                 new_score = model.predict_proba(new_recipe["Instructions"][0]) ###<=== insert the actual scoring model function here
+#                 if new_score >= threshold:
+#                     final_recipes["Title"].append(new_recipe["Title"])
+#                     final_recipes["Ingredients"].append(new_recipe["Ingredients"])
+#                     final_recipes["Instructions"].append(new_recipe["Instructions"])
+#                     break  # Exit loop if the new recipe passes the threshold
+#                 else:
+#                     last_recipe = new_recipe  # Update tmp_recipe with the new recipe if the threshold isn't met
+#                     n += 1
+#             else: # Add the last generated recipe if the loop completes without finding a passing recipe
+#                 final_recipes["Title"].append(last_recipe["Title"])
+#                 final_recipes["Ingredients"].append(last_recipe["Ingredients"])
+#                 final_recipes["Instructions"].append(last_recipe["Instructions"])
+#                 break  # Exit the outer loop to prevent an unending loop
 
-    return final_recipes
+#     return final_recipes
 
 
 '''-----------------------------------------------------------------------------------------------------------'''
@@ -412,26 +418,31 @@ def final_recipes(recipes, scores):  ###<=== Function for evaluating if the scor
     final_recipes = {"Title": [], "Ingredients": [], "Instructions": []}
     threshold = 2
 
-    for i in range(len(recipes["Title"])):
+
+    for i in range(len(recipes["title"])):
         if scores[i] >= threshold:
-            final_recipes["Title"].append(recipes["Title"][i])
-            final_recipes["Ingredients"].append(recipes["Ingredients"][i])
-            final_recipes["Instructions"].append(recipes["Instructions"][i])
+            final_recipes["Title"].append(recipes["title"][i])
+            final_recipes["Ingredients"].append(recipes["ingredients"][i])
+            final_recipes["Instructions"].append(recipes["directions"][i])
         else:
             n = 0
             tmp_recipe = {
-                "Title":recipes["Title"][i],
-                "Ingredients":recipes["Ingredients"][i],
-                "Instructions":recipes["Instructions"][i]
+                "Title":recipes["title"][i],
+                "Ingredients":recipes["ingredients"][i],
+                "Instructions":recipes["directions"][i]
                          }
             last_recipe = {
-                "Title":recipes["Title"][i],
-                "Ingredients":recipes["Ingredients"][i],
-                "Instructions":recipes["Instructions"][i]
+                "Title":recipes["title"][i],
+                "Ingredients":recipes["ingredients"][i],
+                "Instructions":recipes["directions"][i]
                          }
+
             while n < 3:
-                new_recipe = optimized_gptrecipe(tmp_recipe["Ingredients"][0]) ###<=== insert actual recipe generator
-                new_score = scoring_model(new_recipe["Instructions"][0]) ###<=== insert the actual scoring model function here
+                new_recipe = recipe_generator(tmp_recipe["Ingredients"][0]) ###<=== insert actual recipe generator
+                recipe_dicts = convert_to_dictionary(new_recipe)
+                print(recipe_dicts)
+                new_score = model.predict_proba(recipe_dicts[0])[0][1] ###<=== insert the actual scoring model function here
+                print(new_score)
                 if new_score >= threshold:
                     final_recipes["Title"].append(new_recipe["Title"])
                     final_recipes["Ingredients"].append(new_recipe["Ingredients"])
@@ -550,7 +561,7 @@ def recipe_generator(ingredients):
 
     def generation_function(texts):
         _inputs = texts if isinstance(texts, list) else [texts]
-        inputs = [prefix + inp for inp in _inputs]
+        inputs = [str(prefix) + str(inp for inp in _inputs)]
         inputs = tokenizer(
             inputs,
             max_length=256,
