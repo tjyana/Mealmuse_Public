@@ -302,7 +302,7 @@ if st.session_state['page3']:
     ingredients_list = muse_comb(df_comb)
     st.session_state['scored_ingredients'] = ingredients_list
 
-
+    # PSEUDO CODE
     # verified_pairings = st.session_state['verified_pairings']
     # candidates = find_top_3_groups(ingredients, verified_pairings)
     # print(candidates)
